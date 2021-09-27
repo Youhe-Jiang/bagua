@@ -233,7 +233,7 @@ if __name__ == "__main__":
             "deprecation",
             "pytest-benchmark",
             "scikit-optimize==0.8.1",
-            "scikit-learn==0.24.2",
+            "scikit-learn==1.0",
             "numpy",
             "flask",
             "prometheus_client",
