@@ -45,10 +45,14 @@ class Net(nn.Module):
         # for i in range(24):
         #     moe_layers.append(MyMoeLayer(1024, num_local_experts))
 
-        self.moe = nn.Sequential(OrderedDict([
-            ('moe{}'.format(i), MyMoeLayer(1024, num_local_experts))
-            for i in range(24)
-        ]))
+        self.moe = nn.Sequential(
+            OrderedDict(
+                [
+                    ("moe{}".format(i), MyMoeLayer(1024, num_local_experts))
+                    for i in range(24)
+                ]
+            )
+        )
 
     def forward(self, x):
         x = self.conv1(x)
@@ -88,7 +92,7 @@ def train(args, model, train_loader, optimizer, epoch):
                     len(train_loader.dataset),
                     100.0 * batch_idx / len(train_loader),
                     loss.item(),
-                    data.shape[0] * iter_count / (time.time() - record_t)
+                    data.shape[0] * iter_count / (time.time() - record_t),
                 )
             )
             record_t = time.time()

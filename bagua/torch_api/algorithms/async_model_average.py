@@ -27,7 +27,9 @@ def check_nccl_proto():
 
 class AsyncModelAverageAlgorithm(Algorithm):
     def __init__(
-        self, peer_selection_mode: str = "all", sync_interval_ms: int = 500,
+        self,
+        peer_selection_mode: str = "all",
+        sync_interval_ms: int = 500,
     ):
         """
         Create an instance of the
@@ -83,7 +85,9 @@ class AsyncModelAverageAlgorithm(Algorithm):
         return hook
 
     def init_operations(
-        self, bagua_module: BaguaModule, bucket: BaguaBucket,
+        self,
+        bagua_module: BaguaModule,
+        bucket: BaguaBucket,
     ):
         bucket.clear_ops()
         bucket.append_asynchronous_model_average_op(

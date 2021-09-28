@@ -358,6 +358,5 @@ class BaguaBucket:
         return self
 
     def bytes(self) -> int:
-        """Returns the total number of bytes occupied by the bucket.
-        """
+        """Returns the total number of bytes occupied by the bucket."""
         return sum(tensor.numel() * tensor.element_size() for tensor in self.tensors)

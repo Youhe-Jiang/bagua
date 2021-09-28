@@ -20,17 +20,19 @@ import typing
 
 
 class MoE(torch.nn.Module):
-    def __init__(self,
-                 hidden_size,
-                 expert,
-                 num_local_experts=1,
-                 k=1,
-                 output_dropout_prob=0.0,
-                 capacity_factor=1.,
-                 eval_capacity_factor=1.,
-                 min_capacity=4,
-                 noisy_gate_policy: typing.Optional[str] = None,
-                 disable_alltoall: bool = False):
+    def __init__(
+        self,
+        hidden_size,
+        expert,
+        num_local_experts=1,
+        k=1,
+        output_dropout_prob=0.0,
+        capacity_factor=1.0,
+        eval_capacity_factor=1.0,
+        min_capacity=4,
+        noisy_gate_policy: typing.Optional[str] = None,
+        disable_alltoall: bool = False,
+    ):
         """Initialize an MoE layer.
 
         Arguments:
@@ -55,29 +57,38 @@ class MoE(torch.nn.Module):
 
         super(MoE, self).__init__()
 
-        assert noisy_gate_policy is None or noisy_gate_policy in ['None', 'Jitter', 'RSample'], \
-            'Unsupported noisy_gate_policy: ' + noisy_gate_policy
+        assert noisy_gate_policy is None or noisy_gate_policy in [
+            "None",
+            "Jitter",
+            "RSample",
+        ], ("Unsupported noisy_gate_policy: " + noisy_gate_policy)
 
         self.num_experts = num_local_experts * bagua.get_world_size()
-        logging.info(f'num_experts: {self.num_experts} | num_local_experts: {num_local_experts} | world_size: {bagua.get_world_size()}')
+        logging.info(
+            f"num_experts: {self.num_experts} | num_local_experts: {num_local_experts} | world_size: {bagua.get_world_size()}"
+        )
 
         experts = Experts(expert, num_local_experts)
-        self.deepspeed_moe = MOELayer(TopKGate(hidden_size,
-                                               self.num_experts,
-                                               k,
-                                               capacity_factor,
-                                               eval_capacity_factor,
-                                               min_capacity,
-                                               noisy_gate_policy),
-                                      experts,
-                                      num_local_experts,
-                                      group=dist.group.WORLD,
-                                      disable_alltoall=disable_alltoall)
+        self.deepspeed_moe = MOELayer(
+            TopKGate(
+                hidden_size,
+                self.num_experts,
+                k,
+                capacity_factor,
+                eval_capacity_factor,
+                min_capacity,
+                noisy_gate_policy,
+            ),
+            experts,
+            num_local_experts,
+            group=dist.group.WORLD,
+            disable_alltoall=disable_alltoall,
+        )
 
         self.dropout = torch.nn.Dropout(output_dropout_prob)
 
     def forward(self, hidden_states, used_token=None):
-        """ MoE forward
+        """MoE forward
 
         Arguments:
             hidden_states (Tensor): input to the layer
